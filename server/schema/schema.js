@@ -1,5 +1,7 @@
 const graphql = require("graphql");
 const _ = require("lodash");
+const Book = require("../models/books");
+const Author = require("../models/author");
 
 //lets set up some schema
 const {
@@ -13,30 +15,30 @@ const {
 
 //develop type relations
 //dummy data
-let books = [
-  { name: "Name of the Wind", genre: "Fantasy", id: "1", authorId: "1" },
-  {
-    name: "To Kill a Mocking Bird",
-    genre: "Historical",
-    id: "2",
-    authorId: "2"
-  },
-  { name: "Lord of Light", genre: "Sci-Fi", id: "3", authorId: "3" },
-  { name: "Bunch of Junk", genre: "Fantasy", id: "4", authorId: "1" },
-  {
-    name: "Dance Off: The Biography",
-    genre: "Historical",
-    id: "5",
-    authorId: "2"
-  },
-  { name: "Purge", genre: "Sci-Fi", id: "6", authorId: "2" }
-];
+// let books = [
+//   { name: "Name of the Wind", genre: "Fantasy", id: "1", authorId: "1" },
+//   {
+//     name: "To Kill a Mocking Bird",
+//     genre: "Historical",
+//     id: "2",
+//     authorId: "2"
+//   },
+//   { name: "Lord of Light", genre: "Sci-Fi", id: "3", authorId: "3" },
+//   { name: "Bunch of Junk", genre: "Fantasy", id: "4", authorId: "1" },
+//   {
+//     name: "Dance Off: The Biography",
+//     genre: "Historical",
+//     id: "5",
+//     authorId: "2"
+//   },
+//   { name: "Purge", genre: "Sci-Fi", id: "6", authorId: "2" }
+// ];
 
-let authors = [
-  { name: "Bob Saget", age: 55, id: "1" },
-  { name: "Charles Dickens", age: 1000, id: "2" },
-  { name: "J.K. Rowling", age: 52, id: "3" }
-];
+// let authors = [
+//   { name: "Bob Saget", age: 55, id: "1" },
+//   { name: "Charles Dickens", age: 1000, id: "2" },
+//   { name: "J.K. Rowling", age: 52, id: "3" }
+// ];
 
 const BookType = new GraphQLObjectType({
   name: "Book",
@@ -67,6 +69,27 @@ const AuthorType = new GraphQLObjectType({
       }
     }
   })
+});
+
+//Mutations
+const Mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    addAuthor: {
+      type: AuthorType,
+      args: {
+        name: { type: GraphQLString },
+        age: { type: GraphQLInt }
+      },
+      resolve(parent, args) {
+        let author = new Author({
+          name: args.name,
+          age: args.age
+        });
+        return author.save();
+      }
+    }
+  }
 });
 
 //how we initially jump into the graph
@@ -104,5 +127,6 @@ const RootQuery = new GraphQLObjectType({
 });
 
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: Mutation
 });
