@@ -3,11 +3,12 @@ const express = require("express");
 const graphqlHTTP = require("express-graphql");
 const schema = require("./schema/schema");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const app = express();
 
 //connect to mlab database
-
+app.use(cors());
 const uri =
   "mongodb+srv://tester:test123@cluster0-yumtw.mongodb.net/test?retryWrites=true&w=majority";
 mongoose
