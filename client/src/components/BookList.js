@@ -1,40 +1,33 @@
-import React from "react";
-import { gql } from "apollo-boost";
-import { graphql } from "react-apollo";
+import React, { useState } from "react";
+import { useQuery } from "@apollo/react-hooks";
+import { getBooksQuery } from "../queries/queries";
 
-const getBooksQuery = gql`
-  {
-    books {
-      name
-      id
-    }
-  }
-`;
+//components
+import BookDetails from "./BookDetails";
 
-const BookList = props => {
+const BookList = () => {
+  const { loading, data } = useQuery(getBooksQuery);
+  const [bookId, setBookId] = useState("");
   const displayBooks = () => {
     //This works pretty well. Need to expand this.
-    let data = props.data;
-    if (data.loading) {
+    if (loading) {
       return <li>Loading Books...</li>;
     } else {
       return data.books.map(book => {
-        console.log(book);
         return (
-          <>
-            <li key={book.id}>{book.name}</li>
-            <li>{book.id}</li>
-          </>
+          <li key={book.id} onClick={e => setBookId(book.id)}>
+            {book.name}
+          </li>
         );
       });
     }
   };
-
   return (
     <div>
       <ul id="book-list">{displayBooks()}</ul>
+      <BookDetails book_id={bookId} />
     </div>
   );
 };
 
-export default graphql(getBooksQuery)(BookList);
+export default BookList;
